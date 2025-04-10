@@ -4,6 +4,7 @@ namespace Resume_NicolasCastillo_Backend.Dtos
 {
     public class LanguageDto
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string LevelDescription { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

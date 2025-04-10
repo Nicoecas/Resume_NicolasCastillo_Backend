@@ -16,8 +16,8 @@ namespace Resume_NicolasCastillo_Backend.Controllers
         [HttpGet("{personId}")]
         public IActionResult GetTechnologies(int personId)
         {
-            var technologies = _educationService.GetEducations(personId);
-            return Ok(technologies);
+            var educations = _educationService.GetEducations(personId);
+            return Ok(educations);
         }
     }
 }

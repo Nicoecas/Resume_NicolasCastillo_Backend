@@ -7,7 +7,7 @@ namespace Resume_NicolasCastillo_Backend.Servicios
 {
     public interface ITechnologyService
     {
-        public List<TechnologyDto> GetTechnologies(int personId);
+        List<GroupedTechnology> GetTechnologies(int personId);
     }
     public class TechnologyService : ITechnologyService
     {
@@ -16,11 +16,20 @@ namespace Resume_NicolasCastillo_Backend.Servicios
         {
             _mapper = mapper;
         }
-        public List<TechnologyDto> GetTechnologies(int personId)
+        public List<GroupedTechnology> GetTechnologies(int personId)
         {
             var technologies = InMemoryDb.Instance.ListAll<Technology>(p => p.PersonId == personId);
             var technologyDtos = _mapper.Map<List<TechnologyDto>>(technologies);
-            return technologyDtos;
+            var groupedTechnologies = technologyDtos
+                .GroupBy(t => t.TypeName) 
+                .Select(g => new GroupedTechnology
+                {
+                    TypeName = g.Key,
+                    Technologies = g.ToList() 
+                })
+                .ToList();
+
+            return groupedTechnologies;
         }
     }
 }

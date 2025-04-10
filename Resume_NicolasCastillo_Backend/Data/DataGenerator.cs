@@ -18,7 +18,7 @@ namespace Resume_NicolasCastillo_Backend.Data
                 Title = "Developer FullStack (.Net/Angular)",
                 Name = "Nicolás Ezequiel",
                 Surname = "Castillo",
-                GitHub = "------------",
+                GitHub = "https://github.com/Nicoecas/Resume_NicolasCastillo_Backend",
                 Phone = "------------",
                 LinkedIn = "https://www.linkedin.com/in/nicolasezcastillo/",
                 Email = "nicoecas.96@gmail.com",
@@ -81,6 +81,7 @@ namespace Resume_NicolasCastillo_Backend.Data
                             Degree = "Licenciatura en Seguridad Informática",
                             Institution = "Universidad Siglo XXI",
                             StartDate = 2023,
+                            EndDate = 2026,
                             Finalized = false
                         }
                     },

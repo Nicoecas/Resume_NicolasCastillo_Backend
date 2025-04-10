@@ -4,6 +4,7 @@ namespace Resume_NicolasCastillo_Backend.Dtos
 {
     public class EducationDto
     {
+        public int Id { get; set; }
         public string Institution { get; set; } = string.Empty;
         public string Degree { get; set; } = string.Empty;
         [Display(Name = "Start Date")]

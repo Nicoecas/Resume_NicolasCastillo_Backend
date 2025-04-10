@@ -4,6 +4,7 @@ namespace Resume_NicolasCastillo_Backend.Dtos
 {
     public class WorkExperienceDto
     {
+        public int Id { get; set; }
         public string Role { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
         [Display(Name = "Start Date")]
