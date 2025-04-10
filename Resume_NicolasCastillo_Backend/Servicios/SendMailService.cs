@@ -1,63 +1,59 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using Mailjet.Client;
+using Mailjet.Client.Resources;
+using Newtonsoft.Json.Linq;
 using Resume_NicolasCastillo_Backend.Dtos;
 
 namespace Resume_NicolasCastillo_Backend.Servicios
 {
     public interface ISendMailService
     {
-        void SendEmail(SendMailDto sendMailDto);
+        Task SendEmail(SendMailDto sendMailDto);
     }
+
     public class SendMailService : ISendMailService
     {
         private IConfigurationService _IConfig;
-        private readonly string _fromEmail;
         private readonly string _toEmail;
-        private readonly string _password;
-        private readonly string _smtpServer;
-        private readonly int _smtpPort;
+        private readonly string _secretKey;
+        private readonly string _apiKey;
+
         public SendMailService(IConfigurationService iConfig)
         {
             _IConfig = iConfig;
-            _fromEmail = _IConfig.GetSetting("Email", "FromEmail");
-            _toEmail = _IConfig.GetSetting("Email", "ToEmail");
-            _password = _IConfig.GetSetting("Email", "Password");
-            _smtpServer = _IConfig.GetSetting("Email", "SmtpServer");
-            _smtpPort = Int16.Parse(_IConfig.GetSetting("Email", "SmtpPort"));
-            if (string.IsNullOrEmpty(_fromEmail) || string.IsNullOrEmpty(_toEmail) ||
-                string.IsNullOrEmpty(_password) || string.IsNullOrEmpty(_smtpServer) || _smtpPort <= 0)
+            _toEmail = _IConfig.GetSetting("Mailjet", "ToMail");
+            _secretKey = _IConfig.GetSetting("Mailjet", "SecretKey");
+            _apiKey = _IConfig.GetSetting("Mailjet", "ApiKey");
+
+            if (string.IsNullOrEmpty(_secretKey) || string.IsNullOrEmpty(_toEmail) ||
+                string.IsNullOrEmpty(_apiKey))
             {
                 throw new InvalidOperationException("Configuración de correo electrónico no válida.");
             }
         }
-        
-        public void SendEmail(SendMailDto sendMailDto)
+
+        public async Task SendEmail(SendMailDto sendMailDto)
         {
-            if (sendMailDto == null ||
-                string.IsNullOrEmpty(sendMailDto.Email) ||
-                string.IsNullOrEmpty(sendMailDto.Body) ||
-                string.IsNullOrEmpty(sendMailDto.Subject))
+            MailjetClient client = new MailjetClient(_apiKey, _secretKey);
+
+            MailjetRequest request = new MailjetRequest
             {
-                throw new Exception("Los datos del correo no pueden ser nulos.");
+                Resource = Send.Resource,
             }
+            .Property(Send.FromEmail, $"{sendMailDto.EmailFrom}")
+            .Property(Send.FromName, $"{sendMailDto.Name}")
+            .Property(Send.Subject, $"{sendMailDto.Subject}")
+            .Property(Send.TextPart, $"{sendMailDto.Body}")
+            .Property(Send.HtmlPart, $"<h1>Hola Nicolás!</h1><p>{sendMailDto.Body}</p>")
+            .Property(Send.Recipients, new JArray {
+                new JObject {
+                 {"Email", $"{_toEmail}"}
+                 }
+                });
+            MailjetResponse response = await client.PostAsync(request);
 
-            MailMessage mail = new MailMessage
+            if (response.StatusCode != 200)
             {
-                From = new MailAddress(_fromEmail),
-                Subject = sendMailDto.Subject,
-                Body = sendMailDto.Body +$"\n" +
-                $" Mensaje desde: " + sendMailDto.Email,
-                IsBodyHtml = false 
-            };
-            mail.To.Add(_toEmail);
-
-          
-            using (SmtpClient smtpClient = new SmtpClient(_smtpServer, _smtpPort))
-            {
-                smtpClient.EnableSsl = true;
-                smtpClient.Credentials = new NetworkCredential(_fromEmail, _password);
-
-                smtpClient.Send(mail);
+                throw new Exception($"Error al enviar el correo: {response.GetErrorMessage()}");
             }
         }
     }
