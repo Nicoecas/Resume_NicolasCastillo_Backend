@@ -3,6 +3,13 @@ using Resume_NicolasCastillo_Backend.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port));
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
@@ -35,12 +42,6 @@ var app = builder.Build();
 
 app.UseCors("AllowAngularApp");
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 app.UseSwagger();
 app.UseSwaggerUI();
 DataGenerator.Seed();
