@@ -20,7 +20,7 @@ namespace Resume_NicolasCastillo_Backend.Controllers
             try
             {
                 _sendMailService.SendEmail(sendMail);
-                return Ok("Correo enviado exitosamente.");
+                return Ok(new { message = "Correo enviado correctamente" });
             }
             catch (Exception ex)
             {
