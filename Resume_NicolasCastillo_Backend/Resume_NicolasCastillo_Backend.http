@@ -1,6 +1,0 @@
-@Resume_NicolasCastillo_Backend_HostAddress = http://localhost:5200
-
-GET {{Resume_NicolasCastillo_Backend_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
